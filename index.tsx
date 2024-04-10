@@ -10,7 +10,7 @@ type Props = {
   // data passed in to be an array
   data?: any;
   // only one can be opened at a time?
-  single?: SingleOrMultiple;
+  single?: Boolean;
   // icon?: typeof LucideType;
 };
 
@@ -19,11 +19,6 @@ type data = {
   header: string;
   content: string;
 };
-
-enum SingleOrMultiple {
-  Single = "single",
-  Multiple = "multiple",
-}
 
 //disabled style
 const accordionVariants = cn("bg-header", {
@@ -39,23 +34,22 @@ const accordionVariants = cn("bg-header", {
 });
 
 const Accordion = (props: Props) => {
-  const {
-    data,
-    single = SingleOrMultiple.Single,
-    // icon
-  } = props;
   return (
-    <Component.Root type={single} className="rounded-md " collapsible>
-      {data.map((item: data) => {
+    <Component.Root
+      type={props.single ? "single" : "multiple"}
+      className="rounded-md "
+      collapsible
+    >
+      {props.data.map((item: data) => {
         return (
-          <AccordionItem value={props.data.header}>
+          <AccordionItem key={item.header} value={item.header}>
             <AccordionTrigger>
               {/* props.icon && {props.icon} */}
-              {props.data.content}
+              {item.header}
             </AccordionTrigger>
 
             <AccordionContent>
-              <p>{props.data.content}</p>
+              <p>{item.content}</p>
             </AccordionContent>
           </AccordionItem>
         );
@@ -98,7 +92,7 @@ const AccordionTrigger = React.forwardRef<
   <Component.Header className="flex">
     <Component.Trigger
       className={cn(
-        "bg-red-300 py-3 px-2 flex flex-row justify-between min-h-0 w-full group",
+        "bg-header py-3 px-5 flex flex-row justify-between min-h-0 w-full group",
         className
       )}
       {...props}
@@ -113,21 +107,28 @@ const AccordionTrigger = React.forwardRef<
   </Component.Header>
 ));
 
-const AccordionContent = React.forwardRef<
-  HTMLDivElement,
-  AccordionTriggerProps
->(({ children, className, ...props }, forwardedRef) => (
-  <Component.Content
-    className={cn(
-      "bg-white p-1 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]",
-      className
-    )}
-    {...props}
-    ref={forwardedRef}
-  >
-    <div className="bg-contentBar h-full w-1"></div>
-    <div className="py-[15px] px-5">{children}</div>
-  </Component.Content>
-));
+const AccordionContent = React.forwardRef<HTMLDivElement, AccordionTriggerProps>(
+  ({ children, className, ...props }, forwardedRef) => (
+    <Component.Content
+      className={cn(
+        "bg-white p-1 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp text-[15px]",
+        className
+      )}
+      {...props}
+      ref={forwardedRef}
+    >
+      {/* Ensure flex container for horizontal layout */}
+      <div className="flex items-center bg-yellow-300">
+        {/* Simplified bg-contentBar styling */}
+        <div className="bg-contentBar w-1 h-full rounded-full mr-2" />
+
+        {/* Content area with overflow visible for long content */}
+        <div className="py-[15px] px-5 ">{children}</div>
+      </div>
+    </Component.Content>
+  )
+);
+
+
 
 export default Accordion;
