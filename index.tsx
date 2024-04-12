@@ -12,6 +12,7 @@ type Props = {
   // only one can be opened at a time?
   single?: Boolean;
   // icon?: typeof LucideType;
+  // I want to see if we can add icon as a prop 
 };
 
 // What kind of data can we see?
