@@ -1,19 +1,33 @@
 import * as Component from "@radix-ui/react-accordion";
 import React from "react";
 import { ChevronDown } from "lucide-react";
-import { LucideType } from "lucide-react";
+// import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../accordion/lib/utils";
 import "./global.css";
 
-// We want to take in a few things, data, and style
-type Props = {
+interface Props  
+// extends VariantProps<typeof accordionVariants> 
+{
   // data passed in to be an array
-  data?: any;
+  data: data[];
   // only one can be opened at a time?
-  single?: Boolean;
-  // icon?: typeof LucideType;
-  // I want to see if we can add icon as a prop 
-};
+  single?: boolean;
+  disabled?: boolean;
+}
+
+//disabled style
+// const accordionVariants = cva("bg-header", {
+//   variants: {
+//     variant: {
+//       default: "text-contentText",
+//       disabled: "text-disabledText ",
+//     },
+//   },
+//   defaultVariants: {
+//     variant: "default",
+//   },
+// });
+
 
 // What kind of data can we see?
 type data = {
@@ -21,30 +35,24 @@ type data = {
   content: string;
 };
 
-//disabled style
-const accordionVariants = cn("bg-header", {
-  variants: {
-    variant: {
-      default: "text-contentText",
-      disabled: "text-disabledText ",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
 
-const Accordion = (props: Props) => {
+
+const Accordion = ({
+  single = false,
+  disabled = false,
+  data,
+}: Props) => {
   return (
     <Component.Root
-      type={props.single ? "single" : "multiple"}
-      className="rounded-md "
+      type={single ? "single" : "multiple"}
+      className="rounded-md"
       collapsible
+      disabled={disabled}
     >
-      {props.data.map((item: data) => {
+      {data?.map((item: data) => {
         return (
           <AccordionItem key={item.header} value={item.header}>
-            <AccordionTrigger>
+            <AccordionTrigger className="disabled:opacity-50 disabled:cursor-not-allowed">
               {/* props.icon && {props.icon} */}
               {item.header}
             </AccordionTrigger>
@@ -93,7 +101,7 @@ const AccordionTrigger = React.forwardRef<
   <Component.Header className="flex">
     <Component.Trigger
       className={cn(
-        "bg-header py-3 px-5 flex flex-row justify-between min-h-0 w-full group",
+        "bg-header py-3 px-5 data-[state=open]:text-contentBar flex flex-row justify-between min-h-0 w-full group",
         className
       )}
       {...props}
@@ -108,28 +116,27 @@ const AccordionTrigger = React.forwardRef<
   </Component.Header>
 ));
 
-const AccordionContent = React.forwardRef<HTMLDivElement, AccordionTriggerProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Component.Content
-      className={cn(
-        "bg-white p-1 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp text-[15px]",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      {/* Ensure flex container for horizontal layout */}
-      <div className="flex items-center bg-yellow-300">
-        {/* Simplified bg-contentBar styling */}
-        <div className="bg-contentBar w-1 h-full rounded-full mr-2" />
+const AccordionContent = React.forwardRef<
+  HTMLDivElement,
+  AccordionTriggerProps
+>(({ children, className, ...props }, forwardedRef) => (
+  <Component.Content
+    className={cn(
+      "bg-white p-1 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp text-contentText",
+      className
+    )}
+    {...props}
+    ref={forwardedRef}
+  >
+    {/* Ensure flex container for horizontal layout */}
+    <div className="flex items-center bg-yellow-300">
+      {/* Simplified bg-contentBar styling */}
+      <div className="bg-contentBar w-1 h-full rounded-full mr-2" />
 
-        {/* Content area with overflow visible for long content */}
-        <div className="py-[15px] px-5 ">{children}</div>
-      </div>
-    </Component.Content>
-  )
-);
-
-
+      {/* Content area with overflow visible for long content */}
+      <div className="py-[15px] px-5 ">{children}</div>
+    </div>
+  </Component.Content>
+));
 
 export default Accordion;

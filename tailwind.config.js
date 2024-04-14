@@ -7,7 +7,7 @@ module.exports = {
         header: "#F7F7F9",
         contentText: "#1F1F1F",
         disabledText: "#98A2B3",
-        contentBar:"#482384"
+        contentBar:"#482384",
       },
       keyframes: {
         slideDown: {
